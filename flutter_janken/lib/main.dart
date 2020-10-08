@@ -69,11 +69,8 @@ class _MyHomePageState extends State<MyHomePage> {
           children: <Widget>[
             // スペースを追加
             Spacer(),
-            Padding(
-              // 左右に余白を設定
-              padding: EdgeInsets.only(left: 50,right: 50,),
-              // 画像を表示
-              child: image(jankenImage),
+            Expanded(
+                child: image(jankenImage)
             ),
             // スペースを追加
             Spacer(),
@@ -151,7 +148,6 @@ Widget image(String image) {
     // 指定された画像ファイル名を表示する
     return Image.asset(
       image,
-      fit: BoxFit.fitWidth,
     );
   }
 }
