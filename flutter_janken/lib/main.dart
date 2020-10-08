@@ -1,3 +1,4 @@
+import 'dart:math' as math;
 import 'package:flutter/material.dart';
 
 void main() {
@@ -9,7 +10,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
+      title: 'Janken APP',
       theme: ThemeData(
         // This is the theme of your application.
         //
@@ -26,7 +27,7 @@ class MyApp extends StatelessWidget {
         // closer together (more dense) than on mobile platforms.
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
-      home: MyHomePage(title: 'Flutter Demo Home Page'),
+      home: MyHomePage(title: 'Janken APP'),
     );
   }
 }
@@ -50,68 +51,107 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
-
-  void _incrementCounter() {
-    setState(() {
-      // This call to setState tells the Flutter framework that something has
-      // changed in this State, which causes it to rerun the build method below
-      // so that the display can reflect the updated values. If we changed
-      // _counter without calling setState(), then the build method would not be
-      // called again, and so nothing would appear to happen.
-      _counter++;
-    });
-  }
+  int answerNumber = 4;
+  String jankenText = 'これからじゃんけんします';
+  String jankenImage = '';
 
   @override
   Widget build(BuildContext context) {
-    // This method is rerun every time setState is called, for instance as done
-    // by the _incrementCounter method above.
-    //
-    // The Flutter framework has been optimized to make rerunning build methods
-    // fast, so that you can just rebuild anything that needs updating rather
-    // than having to individually change instances of widgets.
     return Scaffold(
       appBar: AppBar(
         // Here we take the value from the MyHomePage object that was created by
         // the App.build method, and use it to set our appbar title.
         title: Text(widget.title),
       ),
-      body: Center(
-        // Center is a layout widget. It takes a single child and positions it
-        // in the middle of the parent.
-        child: Column(
-          // Column is also a layout widget. It takes a list of children and
-          // arranges them vertically. By default, it sizes itself to fit its
-          // children horizontally, and tries to be as tall as its parent.
-          //
-          // Invoke "debug painting" (press "p" in the console, choose the
-          // "Toggle Debug Paint" action from the Flutter Inspector in Android
-          // Studio, or the "Toggle Debug Paint" command in Visual Studio Code)
-          // to see the wireframe for each widget.
-          //
-          // Column has various properties to control how it sizes itself and
-          // how it positions its children. Here we use mainAxisAlignment to
-          // center the children vertically; the main axis here is the vertical
-          // axis because Columns are vertical (the cross axis would be
-          // horizontal).
-          mainAxisAlignment: MainAxisAlignment.center,
+      body: SafeArea(
+        child:       Column(
+          mainAxisAlignment: MainAxisAlignment.start,
           children: <Widget>[
-            Text(
-              'You have pushed the button this many times:',
+            // スペースを追加
+            Spacer(),
+            Padding(
+              // 左右に余白を設定
+              padding: EdgeInsets.only(left: 50,right: 50,),
+              // 画像を表示
+              child: image(jankenImage),
             ),
-            Text(
-              '$_counter',
-              style: Theme.of(context).textTheme.headline4,
+            // スペースを追加
+            Spacer(),
+            Padding(
+              padding: EdgeInsets.all(20.0),
+              child: Text(
+                  jankenText,
+                  style: TextStyle(
+                    fontSize: 20,
+                  )
+              ),
             ),
+            SizedBox(
+              // 横幅いっぱいを指定
+              width: double.infinity,
+              // 高さ100
+              height: 100,
+              // [じゃんけんをする！]ボタン
+              child: RaisedButton(
+                // 背景をピンクに指定
+                color: Colors.pink,
+                onPressed: () {
+                  // 新しいじゃんけんの結果を一時的に格納する変数を設ける
+                  int newAnswerNumber = 0;
+                  // ランダムに結果を出すが、前回の結果と異なる場合のみ採用
+                  // do {} while は繰り返しを意味する
+                  do {
+                    // 0,1,2の数値をランダムに算出（乱数）
+                    newAnswerNumber = math.Random().nextInt(3);
+                    // 前回と同じ結果のときは、再度、ランダムに数値を出す
+                    // 異なる結果のときは、while を抜ける
+                  } while (answerNumber == newAnswerNumber);
+                  // 新しいじゃんけんの結果を格納
+                  answerNumber = newAnswerNumber;
+                  setState(() {
+                    if (answerNumber == 0) {
+                      // じゃんけんの数字が0だったら、グー画像を指定
+                      jankenImage = 'images/gu.png';
+                      jankenText = 'グー';
+                    } else if (answerNumber == 1) {
+                      // じゃんけんの数字が1だったら、チョキ画像を指定
+                      jankenImage = 'images/choki.png';
+                      jankenText = 'チョキ';
+                    } else if (answerNumber == 2) {
+                      // じゃんけんの数字が2だったら、パー画像を指定
+                      jankenImage = 'images/pa.png';
+                      jankenText = 'パー';
+                    }
+                  });
+                },
+                // Buttonに表示する文字を指定
+                child: Text(
+                    'じゃんけんをする！',
+                    style: TextStyle(
+                      // 文字サイズを指定
+                      fontSize: 30,
+                      // 文字色を白に指定
+                      color: Colors.white,
+                    )
+                ),
+              ),
+            )
           ],
         ),
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
-        tooltip: 'Increment',
-        child: Icon(Icons.add),
-      ), // This trailing comma makes auto-formatting nicer for build methods.
+    );
+  }
+}
+
+Widget image(String image) {
+  if (image.isEmpty) {
+    // 画像のファイル名がない場合には、Container()を返して何も表示しない
+    return Container();
+  } else {
+    // 指定された画像ファイル名を表示する
+    return Image.asset(
+      image,
+      fit: BoxFit.fitWidth,
     );
   }
 }
